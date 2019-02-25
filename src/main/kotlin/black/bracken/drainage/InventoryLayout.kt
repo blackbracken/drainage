@@ -5,12 +5,25 @@ package black.bracken.drainage
  */
 class InventoryLayout internal constructor() {
 
-    private var title: String = ""
+    var title: String = ""
+        private set
 
-    fun title(value: String) = title { value }
+    var defaultSlot: Slot = Slot()
+        private set
+
+    var slotMap: Map<Int, Slot> = mapOf()
+        private set
 
     fun title(get: () -> String) {
         title = get()
+    }
+
+    fun defaultSlot(build: Slot.() -> Unit) {
+        defaultSlot.apply(build)
+    }
+
+    fun put(slot: Int, build: Slot.() -> Unit) {
+        slotMap = slotMap.plus(slot to Slot().apply(build))
     }
 
 }
