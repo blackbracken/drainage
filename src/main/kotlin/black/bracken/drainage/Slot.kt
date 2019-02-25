@@ -18,9 +18,9 @@ class Slot(iconMaterial: Material = Material.AIR) {
         icon = build
     }
 
-    fun icon(iconMaterial: Material, build: Icon.() -> Unit) {
+    fun icon(iconMaterial: Material, build: Icon.() -> Unit = {}) {
         icon = {
-            material { iconMaterial }
+            material = iconMaterial
             build()
         }
     }

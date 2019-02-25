@@ -10,18 +10,12 @@ import org.bukkit.inventory.Inventory
 class InventoryLayout(val player: Player,
                       private val inventoryInformation: InventoryInformation) {
 
-    private var title: String = ""
-
+    var title: String? = null
     private val slotMap: MutableMap<Int, Slot.() -> Unit> = mutableMapOf()
-
     private var defaultSlot: Slot.() -> Unit = { Slot() }
 
     fun toInventory(): Inventory {
-        val inventory = if (inventoryInformation.size != null) {
-            Bukkit.createInventory(player, inventoryInformation.size, title)
-        } else {
-            Bukkit.createInventory(player, inventoryInformation.type, title)
-        }
+        val inventory = createInventory(player, inventoryInformation, title)
 
         for (slotIndex in 0 until inventory.size) {
             val slot = Slot().apply(slotMap[slotIndex] ?: defaultSlot)
@@ -33,16 +27,24 @@ class InventoryLayout(val player: Player,
         return inventory
     }
 
-    fun title(build: () -> String) {
-        title = build()
-    }
-
     fun defaultSlot(build: Slot.() -> Unit) {
         defaultSlot = build
     }
 
     fun put(slotPosition: Int, build: Slot.() -> Unit) {
         slotMap[slotPosition] = build
+    }
+
+    private fun createInventory(player: Player, inventoryInformation: InventoryInformation, title: String?): Inventory {
+        val existsTitle = title != null
+
+        return if (inventoryInformation.size != null) {
+            if (existsTitle) Bukkit.createInventory(player, inventoryInformation.size, title)
+            else Bukkit.createInventory(player, inventoryInformation.size)
+        } else {
+            if (existsTitle) Bukkit.createInventory(player, inventoryInformation.type, title)
+            else Bukkit.createInventory(player, inventoryInformation.type)
+        }
     }
 
 }

@@ -12,14 +12,15 @@ import org.bukkit.inventory.meta.Damageable
  */
 class Icon {
 
-    private var material: Material = Material.AIR
-    private var damage: Int = 0
-    private var amount: Int = 1
-    private var name: String? = null
-    private var lore: List<String>? = null
-    private var enchantmentMap: Map<Enchantment, Int> = mapOf()
-    private var flagSet: Set<ItemFlag> = setOf()
-    private var editRawItemStack: ItemStack.() -> Unit = {}
+    var material: Material = Material.AIR
+    var damage: Int = 0
+    var amount: Int = 1
+    var name: String? = null
+    var lore: MutableList<String> = mutableListOf()
+        private set
+    val enchantments: MutableMap<Enchantment, Int> = mutableMapOf()
+    val flags: MutableSet<ItemFlag> = mutableSetOf()
+    private var raw: ItemStack.() -> Unit = {}
 
     fun toItemStack(): ItemStack {
         val itemStack = ItemStack(material)
@@ -27,49 +28,25 @@ class Icon {
 
         (additionalMeta as? Damageable)?.damage = damage
         if (name != null) additionalMeta.displayName = name
-        if (lore != null) additionalMeta.lore = lore
-        for ((enchantment, level) in enchantmentMap) additionalMeta.addEnchant(enchantment, level, true)
-        additionalMeta.addItemFlags(*flagSet.toTypedArray())
+        if (lore.isNotEmpty()) additionalMeta.lore = lore
+        for ((enchantment, level) in enchantments) additionalMeta.addEnchant(enchantment, level, true)
+        additionalMeta.addItemFlags(*flags.toTypedArray())
 
         itemStack.itemMeta = additionalMeta
         itemStack.amount = amount
 
-        return itemStack.apply(editRawItemStack)
+        return itemStack.apply(raw)
     }
 
-    fun material(build: () -> Material) {
-        material = build()
-    }
-
-    fun damage(build: () -> Int) {
-        damage = build()
-    }
-
-    fun amount(build: () -> Int) {
-        amount = build()
-    }
-
-    fun name(build: () -> String) {
-        name = build()
-    }
-
-    fun lore(build: () -> String) {
-        lore = build()
+    fun lore(literal: String) {
+        lore = literal
                 .trimIndent()
                 .split("\n", "\r") // didn't work by System.lineSeparator()
-                .toList()
-    }
-
-    fun enchantment(build: () -> Map<Enchantment, Int>) {
-        enchantmentMap = build()
-    }
-
-    fun flag(build: () -> Set<ItemFlag>) {
-        flagSet = build()
+                .toMutableList()
     }
 
     fun raw(apply: ItemStack.() -> Unit) {
-        editRawItemStack = apply
+        raw = apply
     }
 
 }
