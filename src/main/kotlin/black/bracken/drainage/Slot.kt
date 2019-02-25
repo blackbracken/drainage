@@ -8,23 +8,25 @@ import org.bukkit.event.inventory.InventoryClickEvent
  */
 class Slot(iconMaterial: Material = Material.AIR) {
 
-    var icon: Icon = Icon(iconMaterial)
+    var icon: Icon.() -> Unit = { }
         private set
 
-    var actionOnClick: InventoryClickEvent.() -> Unit = {}
+    var actionOnClick: InventoryClickEvent.() -> Unit = { }
         private set
 
     fun icon(build: Icon.() -> Unit) {
-        icon.apply(build)
+        icon = build
     }
 
     fun icon(iconMaterial: Material, build: Icon.() -> Unit) {
-        icon { material { iconMaterial } }
-        icon(build)
+        icon = {
+            material { iconMaterial }
+            build()
+        }
     }
 
     fun onClick(action: InventoryClickEvent.() -> Unit) {
-
+        actionOnClick = action
     }
 
 }

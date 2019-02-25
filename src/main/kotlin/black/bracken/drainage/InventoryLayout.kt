@@ -1,29 +1,48 @@
 package black.bracken.drainage
 
+import org.bukkit.Bukkit
+import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
+
 /**
  * @author BlackBracken
  */
-class InventoryLayout internal constructor() {
+class InventoryLayout(val player: Player,
+                      private val inventoryInformation: InventoryInformation) {
 
-    var title: String = ""
-        private set
+    private var title: String = ""
 
-    var defaultSlot: Slot = Slot()
-        private set
+    private val slotMap: MutableMap<Int, Slot.() -> Unit> = mutableMapOf()
 
-    var slotMap: Map<Int, Slot> = mapOf()
-        private set
+    private var defaultSlot: Slot.() -> Unit = { Slot() }
 
-    fun title(get: () -> String) {
-        title = get()
+    fun toInventory(): Inventory {
+        val inventory = if (inventoryInformation.size != null) {
+            Bukkit.createInventory(player, inventoryInformation.size, title)
+        } else {
+            Bukkit.createInventory(player, inventoryInformation.type, title)
+        }
+
+        for (slotIndex in 0 until inventory.size) {
+            val slot = Slot().apply(slotMap[slotIndex] ?: defaultSlot)
+            val icon = Icon().apply(slot.icon)
+
+            inventory.setItem(slotIndex, icon.toItemStack())
+        }
+
+        return inventory
+    }
+
+    fun title(build: () -> String) {
+        title = build()
     }
 
     fun defaultSlot(build: Slot.() -> Unit) {
-        defaultSlot.apply(build)
+        defaultSlot = build
     }
 
-    fun put(slot: Int, build: Slot.() -> Unit) {
-        slotMap = slotMap.plus(slot to Slot().apply(build))
+    fun put(slotPosition: Int, build: Slot.() -> Unit) {
+        slotMap[slotPosition] = build
     }
 
 }
