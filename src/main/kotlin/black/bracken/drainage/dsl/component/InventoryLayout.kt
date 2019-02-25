@@ -1,5 +1,6 @@
-package black.bracken.drainage
+package black.bracken.drainage.dsl.component
 
+import black.bracken.drainage.util.InventoryInformation
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory

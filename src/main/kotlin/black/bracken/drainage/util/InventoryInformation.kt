@@ -1,4 +1,4 @@
-package black.bracken.drainage
+package black.bracken.drainage.util
 
 import org.bukkit.event.inventory.InventoryType
 

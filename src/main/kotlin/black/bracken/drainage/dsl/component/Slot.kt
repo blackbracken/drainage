@@ -1,4 +1,4 @@
-package black.bracken.drainage
+package black.bracken.drainage.dsl.component
 
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryClickEvent
