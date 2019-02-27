@@ -7,6 +7,8 @@
 Spigot上でインベントリを使ったUIを簡単に構築するためのライブラリとなるSpigotプラグインです.
 
 ## 例
+![SampleUI](https://raw.githubusercontent.com/blackbracken/Drainage/master/sample.gif)
+
 ```kotlin
 player.openInventory(SampleUI) // これでインベントリを開かせる お手軽!
 
