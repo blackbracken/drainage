@@ -1,0 +1,6 @@
+name: Drainage
+version: 0.1.0
+load: STARTUP
+author: BlackBracken
+
+main: black.bracken.drainage.Drainage
