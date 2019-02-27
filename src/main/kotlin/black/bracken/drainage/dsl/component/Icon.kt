@@ -38,8 +38,8 @@ class Icon {
         return itemStack.apply(raw)
     }
 
-    fun lore(literal: String) {
-        lore = literal
+    fun lore(literal: () -> String) {
+        lore = literal()
                 .trimIndent()
                 .split("\n", "\r") // didn't work by System.lineSeparator()
                 .toMutableList()
