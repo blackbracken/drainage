@@ -8,51 +8,78 @@ Spigot上でインベントリを使ったUIを簡単に構築するためのラ
 
 ## 例
 ```kotlin
-// OPEN: player.openInventory(ExampleUI.layout(player).toInventory())
+player.openInventory(SampleUI) // これでインベントリを開かせる お手軽!
 
-// objectを作成しInventoryUIを実装する UIの実装はlayoutへ以下のように記述する
-object ExampleUI : InventoryUI {
+// objectを作成しInventoryUIを実装する UIの実装はlayoutへbuildを使って記述する
+object SampleUI : InventoryUI {
 
     // チェストタイプのUIを構築 標準は9x3
-    override val layout by build(InventoryInformation(InventoryType.CHEST)) {
-        title = "TestUI" // インベントリのタイトル
+    // 大きさの値を入れることでサイズを指定したチェストタイプのUIも作成できる by build(27)...とこれは等価
+    override val layout by build(InventoryType.CHEST) {
+
+        // この階層のthisはInventoryUI型. (この階層含む)以下のブロックではplayerプロパティが使える
+
+        title = "${ChatColor.DARK_BLUE}SampleUI" // インベントリのタイトル
 
         // デフォルトのスロット putによって埋められなかったスロットは標準でこのスロットになる
         defaultSlot {
-            icon(Material.AIR) {}
-            
-            onClick {} // この行はあってもなくても同じ putと同じように構築できるということを例として示しているだけ
+            // 名前が1スペースの黒い板ガラス
+            icon(Material.BLACK_STAINED_GLASS_PANE) {
+                name = " "
+            }
+
+            // これはなくてもよい putと同じことを記述できるということを示すために書いた
+            // UIの中のItemStackはクリックした際自動で全てイベントキャンセルされる
+            onClick {}
         }
 
-        // 指定したスロットにアイテムやリスナを埋める これは3番目(最上列の左から4番目)
-        put(3) {
-            icon(Material.IRON_AXE) { // このスロットのアイコンの設定
-                damage = 10
-                amount = 3
-                name = "${ChatColor.YELLOW}${player.name}の鉄の斧のアイコン"
-                lore { // 説明文は文字列リテラルで記述する 改行も判別する
+        // 8番目のスロットを, 閉じるという名前のバリアブロックの見た目にしてクリックするとUIを閉じるようにする
+        put(8) {
+            icon(Material.BARRIER) {
+                name = "${ChatColor.RED}閉じる"
+
+                // 説明文には文字リテラルを用いる
+                // 改行することでItemStack側でも改行される
+                lore {
                     """
-                        ${ChatColor.RED}赤文字
-                        ${ChatColor.AQUA}青文字
-                    """.trimIndent() // IDEAで自動補完される
-                }
-
-                // エンチャントやItemFlagも自在
-                enchantments += Enchantment.ARROW_INFINITE to 1
-                flags += ItemFlag.values()
-
-                // どうしても生のItemStackが触りたければこのブロックの中で触れる
-                raw {
-                    val copiedMeta = itemMeta
-                    copiedMeta.displayName = "${ChatColor.YELLOW}名前を書き換えた!"
-                    itemMeta = copiedMeta
+                        ${ChatColor.GRAY}クリックすることで
+                        ${ChatColor.GRAY}このウインドウを閉じます
+                    """.trimIndent() // <- IDEAによって自動挿入される
                 }
             }
 
-            // このアイコンをクリックしたときのリスナ
-            // イベント周りの処理は全て自動で行われるのでここに書くだけでOK
+            // クリックされたときの処理を書く
+            // イベントの登録などの処理は全てDrainage側で行うのでここに記述するだけでOK
             onClick {
-                whoClicked.closeInventory()
+
+                // この階層のthisはInventoryClickEvent型.
+
+                whoClicked.closeInventory() // player.closeInventory()でも良い(はず)
+            }
+        }
+
+        // 23-25番目のスロットを少し耐久の減ったきらめく鉄の剣にする クリックするとテキストが届く
+        // IntRangeも使えるので put(23..25) としても良い
+        put(23, 24, 25) {
+            icon(Material.IRON_SWORD) {
+                damage = (Math.random() * 60.0).toInt()
+
+                enchantments += Enchantment.ARROW_INFINITE to 1 // エンチャントを付与
+                flags += ItemFlag.values() // 全てのステータスを隠す
+
+                // rawブロックを使えば 生のItemStackを触ることもできる
+                raw {
+
+                    // この階層のthisはItemStack型.
+
+                    itemMeta = itemMeta.apply {
+                        displayName = "${ChatColor.RED}rawブロックで名前を書き換えた"
+                    }
+                }
+            }
+
+            onClick {
+                player.sendMessage("${slot}番目のスロットにある剣をクリックした")
             }
         }
     }

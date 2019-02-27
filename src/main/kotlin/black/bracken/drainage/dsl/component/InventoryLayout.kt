@@ -37,8 +37,12 @@ class InventoryLayout(val player: Player,
         defaultSlot = build
     }
 
-    fun put(slotPosition: Int, build: Slot.() -> Unit) {
-        slotMap[slotPosition] = build
+    fun put(vararg slotPositions: Int, build: Slot.() -> Unit) {
+        slotPositions.forEach { slotMap[it] = build }
+    }
+
+    fun put(slotPositionRange: IntRange, build: Slot.() -> Unit) {
+        slotPositionRange.forEach { put(it, build = build) }
     }
 
     private fun createInventory(inventoryHolder: InventoryHolder, inventoryInformation: InventoryInformation, title: String?): Inventory {
