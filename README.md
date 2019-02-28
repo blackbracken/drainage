@@ -1,5 +1,6 @@
 # Drainage
 [![](https://img.shields.io/badge/language-Kotlin-orange.svg)](https://kotlinlang.org)
+[![](https://jitpack.io/v/blackbracken/Drainage.svg)](https://jitpack.io/#blackbracken/Drainage)
 
 *-- A Kotlin DSL to write inventory UI for Spigot 1.13.2+*
 
@@ -87,6 +88,42 @@ object SampleUI : InventoryUI {
     }
 
 }
+```
+
+## 導入
+
+1. [Releases](https://github.com/blackbracken/Drainage/releases)から**for-serverの接尾の付いた**jarをダウンロードし, Spigotサーバのplugins下に配置する
+2. 利用するプラグインのGradle/Mavenで依存関係に追加する 詳しくは下記に
+3. 利用するプラグインのplugin.ymlのdependsに`Drainage`を加える
+4. Drainageを楽しむ
+
+### Gradle
+```
+repositories {
+    // ...
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    // ...
+    compileOnly 'com.github.blackbracken:Drainage:<Drainageのバージョン>'
+}
+```
+
+### Maven
+```
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+
+<dependency>
+    <groupId>com.github.blackbracken</groupId>
+    <artifactId>Drainage</artifactId>
+    <version>Drainageのバージョン</version>
+</dependency>
 ```
 
 ## ライセンス
