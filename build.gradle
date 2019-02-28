@@ -29,14 +29,16 @@ dependencies {
 
 shadowJar {
     dependencies {
-        exclude(dependency {
-            it.moduleGroup != "org.jetbrains.kotlin"
-        })
+        exclude(
+                dependency {
+                    it.moduleGroup != "org.jetbrains.kotlin"
+                }
+        )
     }
 
     relocate "kotlin", "black.bracken.drainage.internal.kotlin"
 
-    classifier = null
+    classifier = "for-server"
 }
 
 artifacts {
