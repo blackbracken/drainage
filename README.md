@@ -64,7 +64,8 @@ object SampleUI : InventoryUI {
         // 23-25番目のスロットを少し耐久の減ったきらめく鉄の剣にする クリックするとテキストが届く
         // IntRangeも使えるので put(23..25) としても良い
         put(23, 24, 25) {
-            icon(Material.IRON_SWORD) {
+            // IconはItemStackをもとにして作ることもできる
+            icon(ItemStack(Material.IRON_SWORD)) {
                 damage = (Math.random() * 60.0).toInt()
 
                 enchantments += Enchantment.ARROW_INFINITE to 1 // エンチャントを付与

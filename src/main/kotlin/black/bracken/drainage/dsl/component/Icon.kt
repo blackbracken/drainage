@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.Damageable
  */
 class Icon {
 
+    var basedItemStack: ItemStack? = null
     var material: Material = Material.AIR
     var damage: Int = 0
     var amount: Int = 1
@@ -23,8 +24,10 @@ class Icon {
     private var raw: ItemStack.() -> Unit = {}
 
     fun toItemStack(): ItemStack {
-        val itemStack = ItemStack(material)
-        val additionalMeta = Bukkit.getItemFactory().getItemMeta(material) ?: return itemStack
+        val itemStack = basedItemStack ?: ItemStack(material)
+        val additionalMeta = basedItemStack?.itemMeta
+                ?: Bukkit.getItemFactory().getItemMeta(material)
+                ?: return itemStack
 
         (additionalMeta as? Damageable)?.damage = damage
         if (name != null) additionalMeta.displayName = name
