@@ -2,6 +2,7 @@ package black.bracken.drainage.dsl.component
 
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemStack
 
 /**
  * @author BlackBracken
@@ -20,6 +21,13 @@ class Slot {
     fun icon(iconMaterial: Material, build: Icon.() -> Unit = {}) {
         icon = {
             material = iconMaterial
+            build()
+        }
+    }
+
+    fun icon(based: ItemStack, build: Icon.() -> Unit = {}) {
+        icon = {
+            basedItemStack = based
             build()
         }
     }
