@@ -42,7 +42,7 @@ class LayoutBuilder internal constructor(private val inventoryInformation: Inven
 
                         event.isCancelled = true
 
-                        val slot = Slot().apply(layout[event.slot])
+                        val slot = Slot().apply { layout[event.slot](this, event.slot) }
                         slot.actionOnClick(event)
                     }
 

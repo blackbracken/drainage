@@ -10,13 +10,14 @@ import org.bukkit.inventory.ItemStack
 
 private typealias IconCondiment = Icon.() -> Unit
 
-private typealias InventoryClickEventListener = InventoryClickEvent.() -> Unit
 
 class Slot {
 
     internal var iconCondiment: IconCondiment = { }
         private set
-    internal var actionOnClick: InventoryClickEventListener = { }
+    internal var filter: () -> Boolean = { true }
+        private set
+    internal var actionOnClick: InventoryClickEvent.() -> Unit = { }
         private set
 
     fun icon(build: Icon.() -> Unit) {
@@ -33,7 +34,11 @@ class Slot {
         build()
     }
 
-    fun onClick(action: InventoryClickEventListener) {
+    fun filter(build: () -> Boolean) {
+        filter = build
+    }
+
+    fun onClick(action: InventoryClickEvent.() -> Unit) {
         actionOnClick = action
     }
 

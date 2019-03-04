@@ -26,16 +26,17 @@ class Icon {
         val itemStack = basedItemStack?.clone() ?: ItemStack(material)
 
         itemStack.amount = amount
+        itemStack.itemMeta = itemStack.itemMeta
+                ?.clone()
+                ?.also { meta ->
+                    meta.displayName = name
+                    meta.lore = lore
 
-        itemStack.itemMeta?.apply {
-            this.displayName = name
-            this.lore = lore
+                    for ((enchantment, level) in enchantments) meta.addEnchant(enchantment, level, true)
+                    meta.addItemFlags(*flags.toTypedArray())
 
-            for ((enchantment, level) in enchantments) this.addEnchant(enchantment, level, true)
-            this.addItemFlags(*flags.toTypedArray())
-
-            (this as? Damageable)?.damage = damage
-        }
+                    (meta as? Damageable)?.damage = damage
+                }
 
         return itemStack.apply(raw)
     }

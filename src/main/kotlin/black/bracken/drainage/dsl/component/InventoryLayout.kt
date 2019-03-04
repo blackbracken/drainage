@@ -11,7 +11,7 @@ import org.bukkit.inventory.InventoryHolder
  * @author BlackBracken
  */
 
-private typealias SlotCondiment = Slot.() -> Unit
+private typealias SlotCondiment = Slot.(Int) -> Unit
 
 class InventoryLayout(val player: Player,
                       private val uiInstance: InventoryUI,
@@ -21,13 +21,16 @@ class InventoryLayout(val player: Player,
     private val slotMap: MutableMap<Int, SlotCondiment> = mutableMapOf()
     private var defaultSlot: SlotCondiment = { Slot() }
 
-    operator fun get(key: Int) = slotMap[key] ?: defaultSlot
+    operator fun get(slotIndex: Int): SlotCondiment {
+        return slotMap[slotIndex] ?: defaultSlot
+    }
 
     fun toInventory(): Inventory {
         val inventory = createInventory(uiInstance, inventoryInformation, title)
 
         for (slotIndex in 0 until inventory.size) {
-            val slot = Slot().apply(this[slotIndex])
+            val slot = Slot().apply(this[slotIndex], slotIndex)
+                    .takeIf { it.filter() } ?: Slot().apply(defaultSlot, slotIndex)
             val slotItem = Icon().apply(slot.iconCondiment).toItemStack()
 
             inventory.setItem(slotIndex, slotItem)
@@ -45,7 +48,7 @@ class InventoryLayout(val player: Player,
     }
 
     fun put(positionRange: IntRange, build: SlotCondiment) {
-        put(*positionRange.toList().toIntArray()) { build() }
+        put(positions = *positionRange.toList().toIntArray(), build = build)
     }
 
     private fun createInventory(inventoryHolder: InventoryHolder, inventoryInformation: InventoryInformation, title: String?): Inventory {
@@ -58,6 +61,11 @@ class InventoryLayout(val player: Player,
             if (existsTitle) Bukkit.createInventory(inventoryHolder, inventoryInformation.type, title)
             else Bukkit.createInventory(inventoryHolder, inventoryInformation.type)
         }
+    }
+
+    private fun Slot.apply(build: Slot.(Int) -> Unit, index: Int): Slot {
+        build.invoke(this, index)
+        return this
     }
 
 }
