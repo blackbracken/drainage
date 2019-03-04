@@ -18,33 +18,42 @@ class InventoryLayout(val player: Player,
                       private val inventoryInformation: InventoryInformation) {
 
     var title: String? = null
-    private val slotMap: MutableMap<Int, SlotCondiment> = mutableMapOf()
-    private var defaultSlot: SlotCondiment = { Slot() }
+    private val slotCondimentMap: MutableMap<Int, SlotCondiment> = mutableMapOf()
+    private var defaultSlotCondiment: SlotCondiment = {}
 
-    operator fun get(slotIndex: Int): SlotCondiment {
-        return slotMap[slotIndex] ?: defaultSlot
+    fun getSlotAt(slotIndex: Int): Slot {
+        val slot = Slot().apply {
+            slotCondimentMap
+                    .getOrDefault(slotIndex, defaultSlotCondiment)
+                    .invoke(this, slotIndex)
+        }
+
+        return if (slot.isAvailable()) {
+            slot
+        } else {
+            Slot().apply { defaultSlotCondiment.invoke(this, slotIndex) }
+        }
     }
 
-    fun toInventory(): Inventory {
+    fun buildInventory(): Inventory {
         val inventory = createInventory(uiInstance, inventoryInformation, title)
 
         for (slotIndex in 0 until inventory.size) {
-            val slot = Slot().apply(this[slotIndex], slotIndex)
-                    .takeIf { it.filter() } ?: Slot().apply(defaultSlot, slotIndex)
-            val slotItem = Icon().apply(slot.iconCondiment).toItemStack()
-
-            inventory.setItem(slotIndex, slotItem)
+            inventory.setItem(
+                    slotIndex,
+                    getSlotAt(slotIndex).buildIcon().toItemStack()
+            )
         }
 
         return inventory
     }
 
     fun defaultSlot(build: SlotCondiment) {
-        defaultSlot = build
+        defaultSlotCondiment = build
     }
 
     fun put(vararg positions: Int, build: SlotCondiment) {
-        positions.forEach { slotMap[it] = build }
+        positions.forEach { slotCondimentMap[it] = build }
     }
 
     fun put(positionRange: IntRange, build: SlotCondiment) {
@@ -61,11 +70,6 @@ class InventoryLayout(val player: Player,
             if (existsTitle) Bukkit.createInventory(inventoryHolder, inventoryInformation.type, title)
             else Bukkit.createInventory(inventoryHolder, inventoryInformation.type)
         }
-    }
-
-    private fun Slot.apply(build: Slot.(Int) -> Unit, index: Int): Slot {
-        build.invoke(this, index)
-        return this
     }
 
 }

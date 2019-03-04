@@ -8,5 +8,5 @@ import org.bukkit.entity.Player
  */
 
 fun Player.openInventory(ui: InventoryUI) {
-    this.openInventory(ui.layout(this).toInventory())
+    this.openInventory(ui.layout(this).buildInventory())
 }

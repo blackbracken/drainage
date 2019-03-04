@@ -2,7 +2,6 @@ package black.bracken.drainage.dsl
 
 import black.bracken.drainage.Drainage
 import black.bracken.drainage.dsl.component.InventoryLayout
-import black.bracken.drainage.dsl.component.Slot
 import black.bracken.drainage.util.InventoryInformation
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -42,8 +41,8 @@ class LayoutBuilder internal constructor(private val inventoryInformation: Inven
 
                         event.isCancelled = true
 
-                        val slot = Slot().apply { layout[event.slot](this, event.slot) }
-                        slot.actionOnClick(event)
+                        val slot = layout.getSlotAt(event.slot)
+                        slot.fire(event)
                     }
 
                 }
