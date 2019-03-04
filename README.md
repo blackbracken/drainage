@@ -8,7 +8,7 @@
 Spigot上でインベントリを使ったUIを簡単に構築するためのライブラリとなるSpigotプラグインです.
 
 ## 例
-![SampleUI](https://user-images.githubusercontent.com/18373318/53507569-7b384b80-3afb-11e9-81bb-a9831257fcbe.gif)
+![SampleUI](https://user-images.githubusercontent.com/18373318/53733028-05e5c580-3ec3-11e9-84dc-c8e0adc33d48.gif)
 
 ```kotlin
 player.openInventory(SampleUI) // これでインベントリを開かせる お手軽!
@@ -61,9 +61,10 @@ object SampleUI : InventoryUI {
             }
         }
 
-        // 23-25番目のスロットを少し耐久の減ったきらめく鉄の剣にする クリックするとテキストが届く
-        // IntRangeも使えるので put(23..25) としても良い
-        put(23, 24, 25) {
+        // 9-17番目のスロットを少し耐久の減ったきらめく鉄の剣にする クリックするとテキストが届く
+        // IntRangeも使えるので put(9 until 18) や put(9..17) としても良い
+        put(9, 10, 11, 12, 13, 14, 15, 16, 17) { slotIndex -> // slotの場所を示す 書かず使わなくても良い
+
             // IconはItemStackをもとにして作ることもできる
             icon(ItemStack(Material.IRON_SWORD)) {
                 damage = (Math.random() * 60.0).toInt()
@@ -80,6 +81,10 @@ object SampleUI : InventoryUI {
                         displayName = "${ChatColor.RED}rawブロックで名前を書き換えた"
                     }
                 }
+            }
+
+            filter {
+                slotIndex > 13 // slotの場所が13より大きければ有効になる それ以外の場合はdefaultSlotになる
             }
 
             onClick {
