@@ -10,13 +10,16 @@ import org.bukkit.inventory.InventoryHolder
 /**
  * @author BlackBracken
  */
+
+private typealias SlotCondiment = Slot.() -> Unit
+
 class InventoryLayout(val player: Player,
                       private val uiInstance: InventoryUI,
                       private val inventoryInformation: InventoryInformation) {
 
     var title: String? = null
-    private val slotMap: MutableMap<Int, Slot.() -> Unit> = mutableMapOf()
-    private var defaultSlot: Slot.() -> Unit = { Slot() }
+    private val slotMap: MutableMap<Int, SlotCondiment> = mutableMapOf()
+    private var defaultSlot: SlotCondiment = { Slot() }
 
     operator fun get(key: Int) = slotMap[key] ?: defaultSlot
 
@@ -25,7 +28,7 @@ class InventoryLayout(val player: Player,
 
         for (slotIndex in 0 until inventory.size) {
             val slot = Slot().apply(this[slotIndex])
-            val slotItem = Icon().apply(slot.icon).toItemStack()
+            val slotItem = Icon().apply(slot.iconCondiment).toItemStack()
 
             inventory.setItem(slotIndex, slotItem)
         }
@@ -33,16 +36,16 @@ class InventoryLayout(val player: Player,
         return inventory
     }
 
-    fun defaultSlot(build: Slot.() -> Unit) {
+    fun defaultSlot(build: SlotCondiment) {
         defaultSlot = build
     }
 
-    fun put(vararg slotPositions: Int, build: Slot.() -> Unit) {
-        slotPositions.forEach { slotMap[it] = build }
+    fun put(vararg positions: Int, build: SlotCondiment) {
+        positions.forEach { slotMap[it] = build }
     }
 
-    fun put(slotPositionRange: IntRange, build: Slot.() -> Unit) {
-        slotPositionRange.forEach { put(it, build = build) }
+    fun put(positionRange: IntRange, build: SlotCondiment) {
+        put(*positionRange.toList().toIntArray()) { build() }
     }
 
     private fun createInventory(inventoryHolder: InventoryHolder, inventoryInformation: InventoryInformation, title: String?): Inventory {

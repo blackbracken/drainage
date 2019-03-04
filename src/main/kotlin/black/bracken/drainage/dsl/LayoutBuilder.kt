@@ -32,20 +32,22 @@ class LayoutBuilder internal constructor(private val inventoryInformation: Inven
         isInitialized = true
 
         val uiClass = uiInstance::class.java
-        val listener: Listener = object : Listener {
-            @EventHandler
-            fun onClick(event: InventoryClickEvent) {
-                val holderClass = event.clickedInventory?.run { holder::class.java } ?: return
-                if (holderClass != uiClass) return
+        Drainage.registerEvent(
+                object : Listener {
 
-                event.isCancelled = true
+                    @EventHandler
+                    fun onClick(event: InventoryClickEvent) {
+                        val holderClass = event.clickedInventory?.run { holder::class.java } ?: return
+                        if (holderClass != uiClass) return
 
-                val slot = Slot().apply(layout[event.slot])
-                slot.actionOnClick(event)
-            }
-        }
+                        event.isCancelled = true
 
-        Drainage.registerEvent(listener)
+                        val slot = Slot().apply(layout[event.slot])
+                        slot.actionOnClick(event)
+                    }
+
+                }
+        )
     }
 
 }

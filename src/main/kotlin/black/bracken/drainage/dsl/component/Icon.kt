@@ -1,6 +1,5 @@
 package black.bracken.drainage.dsl.component
 
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
@@ -24,19 +23,19 @@ class Icon {
     private var raw: ItemStack.() -> Unit = {}
 
     fun toItemStack(): ItemStack {
-        val itemStack = basedItemStack ?: ItemStack(material)
-        val additionalMeta = basedItemStack?.itemMeta
-                ?: Bukkit.getItemFactory().getItemMeta(material)
-                ?: return itemStack
+        val itemStack = basedItemStack?.clone() ?: ItemStack(material)
 
-        (additionalMeta as? Damageable)?.damage = damage
-        if (name != null) additionalMeta.displayName = name
-        if (lore.isNotEmpty()) additionalMeta.lore = lore
-        for ((enchantment, level) in enchantments) additionalMeta.addEnchant(enchantment, level, true)
-        additionalMeta.addItemFlags(*flags.toTypedArray())
-
-        itemStack.itemMeta = additionalMeta
         itemStack.amount = amount
+
+        itemStack.itemMeta?.apply {
+            this.displayName = name
+            this.lore = lore
+
+            for ((enchantment, level) in enchantments) this.addEnchant(enchantment, level, true)
+            this.addItemFlags(*flags.toTypedArray())
+
+            (this as? Damageable)?.damage = damage
+        }
 
         return itemStack.apply(raw)
     }

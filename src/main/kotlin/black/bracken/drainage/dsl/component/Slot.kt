@@ -7,32 +7,33 @@ import org.bukkit.inventory.ItemStack
 /**
  * @author BlackBracken
  */
+
+private typealias IconCondiment = Icon.() -> Unit
+
+private typealias InventoryClickEventListener = InventoryClickEvent.() -> Unit
+
 class Slot {
 
-    internal var icon: Icon.() -> Unit = { }
+    internal var iconCondiment: IconCondiment = { }
         private set
-    internal var actionOnClick: InventoryClickEvent.() -> Unit = { }
+    internal var actionOnClick: InventoryClickEventListener = { }
         private set
 
     fun icon(build: Icon.() -> Unit) {
-        icon = build
+        iconCondiment = build
     }
 
-    fun icon(iconMaterial: Material, build: Icon.() -> Unit = {}) {
-        icon = {
-            material = iconMaterial
-            build()
-        }
+    fun icon(iconMaterial: Material, build: IconCondiment = {}) = icon {
+        material = iconMaterial
+        build()
     }
 
-    fun icon(based: ItemStack, build: Icon.() -> Unit = {}) {
-        icon = {
-            basedItemStack = based
-            build()
-        }
+    fun icon(itemStack: ItemStack, build: IconCondiment = {}) = icon {
+        basedItemStack = itemStack
+        build()
     }
 
-    fun onClick(action: InventoryClickEvent.() -> Unit) {
+    fun onClick(action: InventoryClickEventListener) {
         actionOnClick = action
     }
 
