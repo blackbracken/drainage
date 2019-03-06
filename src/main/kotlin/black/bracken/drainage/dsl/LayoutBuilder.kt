@@ -7,6 +7,9 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.event.inventory.InventoryOpenEvent
+import org.bukkit.inventory.Inventory
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -36,13 +39,30 @@ class LayoutBuilder internal constructor(private val inventoryInformation: Inven
 
                     @EventHandler
                     fun onClick(event: InventoryClickEvent) {
-                        val holderClass = event.clickedInventory?.run { holder::class.java } ?: return
-                        if (holderClass != uiClass) return
+                        if ({ event.clickedInventory }.isThisUI()) {
+                            event.isCancelled = true
 
-                        event.isCancelled = true
+                            layout.getSlotAt(event.slot).fire(event)
+                        }
+                    }
 
-                        val slot = layout.getSlotAt(event.slot)
-                        slot.fire(event)
+                    @EventHandler
+                    fun onOpen(event: InventoryOpenEvent) {
+                        if ({ event.inventory }.isThisUI()) {
+                            layout.fire(event)
+                        }
+                    }
+
+                    @EventHandler
+                    fun onClose(event: InventoryCloseEvent) {
+                        if ({ event.inventory }.isThisUI()) {
+                            layout.fire(event)
+                        }
+                    }
+
+                    private fun (() -> Inventory?).isThisUI(): Boolean {
+                        val holderClass = invoke()?.run { holder::class.java } ?: return false
+                        return holderClass == uiClass
                     }
 
                 }

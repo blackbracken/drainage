@@ -4,6 +4,8 @@ import black.bracken.drainage.dsl.InventoryUI
 import black.bracken.drainage.util.InventoryInformation
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
@@ -19,7 +21,10 @@ class InventoryLayout(val player: Player,
 
     var title: String? = null
     private val slotMap: MutableMap<Int, Slot> = mutableMapOf()
+
     private var defaultSlotCondiment: SlotCondiment = {}
+    private var actionOnOpen: InventoryOpenEvent.() -> Unit = {}
+    private var actionOnClose: InventoryCloseEvent.() -> Unit = {}
 
     fun getSlotAt(slotIndex: Int): Slot {
         return slotMap.getOrDefault(slotIndex, Slot().apply { defaultSlotCondiment(slotIndex) })
@@ -51,6 +56,22 @@ class InventoryLayout(val player: Player,
 
     fun put(positionRange: IntRange, build: SlotCondiment) {
         put(positions = *positionRange.toList().toIntArray(), build = build)
+    }
+
+    fun onOpen(action: InventoryOpenEvent.() -> Unit) {
+        actionOnOpen = action
+    }
+
+    fun onClose(action: InventoryCloseEvent.() -> Unit) {
+        actionOnClose = action
+    }
+
+    internal fun fire(event: InventoryOpenEvent) {
+        actionOnOpen(event)
+    }
+
+    internal fun fire(event: InventoryCloseEvent) {
+        actionOnClose(event)
     }
 
     private fun createInventory(inventoryHolder: InventoryHolder, inventoryInformation: InventoryInformation, title: String?): Inventory {
