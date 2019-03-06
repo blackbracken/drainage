@@ -18,21 +18,11 @@ class InventoryLayout(val player: Player,
                       private val inventoryInformation: InventoryInformation) {
 
     var title: String? = null
-    private val slotCondimentMap: MutableMap<Int, SlotCondiment> = mutableMapOf()
+    private val slotMap: MutableMap<Int, Slot> = mutableMapOf()
     private var defaultSlotCondiment: SlotCondiment = {}
 
     fun getSlotAt(slotIndex: Int): Slot {
-        val slot = Slot().apply {
-            slotCondimentMap
-                    .getOrDefault(slotIndex, defaultSlotCondiment)
-                    .invoke(this, slotIndex)
-        }
-
-        return if (slot.isAvailable()) {
-            slot
-        } else {
-            Slot().apply { defaultSlotCondiment.invoke(this, slotIndex) }
-        }
+        return slotMap.getOrDefault(slotIndex, Slot().apply { defaultSlotCondiment(slotIndex) })
     }
 
     fun buildInventory(): Inventory {
@@ -53,7 +43,10 @@ class InventoryLayout(val player: Player,
     }
 
     fun put(vararg positions: Int, build: SlotCondiment) {
-        positions.forEach { slotCondimentMap[it] = build }
+        positions
+                .map { position -> position to Slot().apply { build(position) } }
+                .filter { (_, slot) -> slot.isAvailable() }
+                .forEach { (position, slot) -> slotMap[position] = slot }
     }
 
     fun put(positionRange: IntRange, build: SlotCondiment) {
