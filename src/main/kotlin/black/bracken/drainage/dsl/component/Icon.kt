@@ -50,4 +50,9 @@ class Icon {
         raw = apply
     }
 
+    fun gleam() {
+        enchantments += Enchantment.ARROW_INFINITE to 1
+        flags += ItemFlag.HIDE_ENCHANTS
+    }
+
 }
