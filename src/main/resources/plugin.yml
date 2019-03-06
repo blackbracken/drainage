@@ -1,6 +1,5 @@
 name: Drainage
-version: 1.3
-load: STARTUP
+version: 2.0
 api-version: 1.13
 author: BlackBracken
 
