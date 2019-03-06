@@ -16,8 +16,7 @@ class Icon {
     var damage: Int = 0
     var amount: Int = 1
     var name: String? = null
-    var lore: MutableList<String> = mutableListOf()
-        private set
+    val lore: MutableList<String> = mutableListOf()
     val enchantments: MutableMap<Enchantment, Int> = mutableMapOf()
     val flags: MutableSet<ItemFlag> = mutableSetOf()
     private var raw: ItemStack.() -> Unit = {}
@@ -42,10 +41,9 @@ class Icon {
     }
 
     fun lore(literal: () -> String) {
-        lore = literal()
+        lore += literal()
                 .trimIndent()
                 .split("\n", "\r") // didn't work by System.lineSeparator()
-                .toMutableList()
     }
 
     fun raw(apply: ItemStack.() -> Unit) {
