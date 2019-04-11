@@ -19,9 +19,9 @@ interface InventoryUI : InventoryHolder {
 
     @Deprecated(
             message = "Use InventoryUI#layout(Player).toInventory() instead.",
-            level = DeprecationLevel.WARNING,
+            level = DeprecationLevel.ERROR,
             replaceWith = ReplaceWith("layout(Player).toInventory()"))
-    override fun getInventory(): Inventory? = null
+    override fun getInventory(): Inventory = throw UnsupportedOperationException()
 
     fun InventoryUI.build(inventoryInformation: InventoryInformation, build: LayoutCondiment): LayoutBuilder {
         return LayoutBuilder(inventoryInformation, this@build, build)

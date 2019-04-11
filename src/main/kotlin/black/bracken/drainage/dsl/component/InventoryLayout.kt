@@ -75,14 +75,18 @@ class InventoryLayout(val player: Player,
     }
 
     private fun createInventory(inventoryHolder: InventoryHolder, inventoryInformation: InventoryInformation, title: String?): Inventory {
-        val existsTitle = title != null
-
         return if (inventoryInformation.size != null) {
-            if (existsTitle) Bukkit.createInventory(inventoryHolder, inventoryInformation.size, title)
-            else Bukkit.createInventory(inventoryHolder, inventoryInformation.size)
+            if (title != null) {
+                Bukkit.createInventory(inventoryHolder, inventoryInformation.size, title)
+            } else {
+                Bukkit.createInventory(inventoryHolder, inventoryInformation.size)
+            }
         } else {
-            if (existsTitle) Bukkit.createInventory(inventoryHolder, inventoryInformation.type, title)
-            else Bukkit.createInventory(inventoryHolder, inventoryInformation.type)
+            if (title != null) {
+                Bukkit.createInventory(inventoryHolder, inventoryInformation.type, title)
+            } else {
+                Bukkit.createInventory(inventoryHolder, inventoryInformation.type)
+            }
         }
     }
 

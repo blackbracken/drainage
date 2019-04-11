@@ -36,9 +36,9 @@ shadowJar {
         )
     }
 
-    relocate "kotlin", "black.bracken.drainage.internal.kotlin"
+    //relocate "kotlin", "black.bracken.drainage.internal.kotlin"
 
-    classifier = "for-test"
+    classifier = null
 }
 
 artifacts {

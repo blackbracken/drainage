@@ -28,7 +28,7 @@ class Icon {
         itemStack.itemMeta = itemStack.itemMeta
                 ?.clone()
                 ?.also { meta ->
-                    meta.displayName = name
+                    meta.setDisplayName(name)
                     meta.lore = lore
 
                     for ((enchantment, level) in enchantments) meta.addEnchant(enchantment, level, true)
